@@ -36,11 +36,12 @@ Most incident tools rely on black‑box AI or heuristics that cannot be trusted 
 flowchart TD
     A[Log File] --> B[Log Parsing Engine]
     B --> C[Incident Normalization]
-    C --> D[Rule‑Based Classification]
+    C --> D[Rule-Based Classification]
     D --> E[Root Cause Analysis]
     E --> F[Recommendation Engine]
     F --> G[Final JSON Report]
-    G --> H[Incident History (JSONL)]
+    G --> H[Incident History JSONL]
+
 ```
 
 ---
