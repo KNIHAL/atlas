@@ -1,185 +1,153 @@
 Metadata-Version: 2.4
 Name: atlas-incident
-Version: 0.1.1
+Version: 0.1.2
 Summary: Deterministic, rule-based incident analysis and RCA system
 Author: Nihal
 License-Expression: MIT
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 
-# ATLAS — Deterministic Incident Analysis & RCA (CLI)
+# ATLAS — Deterministic Incident Analysis & Response (CLI)
 
-ATLAS is a **pip-installable CLI tool** for **deterministic incident analysis and root cause analysis (RCA)**. It ingests real production logs and produces **explainable JSON reports** with classification, root cause, and concrete actions — **without AI/ML**.
+ATLAS is a **pip-installable CLI tool** for **deterministic incident analysis, root cause analysis (RCA), and response workflows**.  
+It ingests real production logs and produces **explainable, auditable outputs** — **without AI / ML**.
 
-**Audience:** SREs, DevOps, Platform engineers.
-**Guarantee:** Same input → same output. Auditable rules. Zero black boxes.
+**Audience:** SREs, DevOps, Platform engineers  
+**Guarantee:** Same input → same output. No black boxes.
 
 ---
 
 ## Why ATLAS?
 
-Most incident tools rely on black‑box AI or heuristics that cannot be trusted under pressure. ATLAS takes the opposite approach:
+Most incident tools rely on opaque AI or heuristics that cannot be trusted during outages.  
+ATLAS is built for **predictability, explainability, and production realism**.
 
-* 🔒 **Zero‑AI** (no LLMs, no ML, no embeddings)
-* 🧠 **Fully deterministic** (same input → same output)
-* 🧾 **Explainable decisions** (rule‑based logic)
-* 🧪 **100% testable** core pipeline
-* ⚙️ **Real‑world workflow** (file‑based CLI + JSON output)
+* 🔒 Zero-AI (no LLMs, no ML, no embeddings)
+* 🧠 Fully deterministic
+* 🧾 Rule-based & explainable
+* 🧪 100% testable core
+* ⚙️ Real CLI workflow (files in → decisions out)
 
 ---
 
 ## What ATLAS Does
 
-1. Parses raw production logs
-2. Normalizes them into a canonical incident schema
-3. Classifies the incident (DB, Network, Auth, etc.)
-4. Infers probable root cause via rule chains
-5. Suggests concrete remediation actions
-6. Persists incident history for audit & comparison
+### ATLAS v1 — Incident Analysis
+1. Parses raw logs
+2. Normalizes into a canonical incident schema
+3. Classifies incident type
+4. Infers probable root cause
+5. Suggests remediation actions
+6. Persists incident history (JSONL)
+
+### ATLAS v2 — Priority & Response Engine
+ATLAS v2 converts analyzed incidents into **decisions**.
+
+* Priority scoring (P0–P3)
+* Rule-based decisions (IF–THEN)
+* Workflow execution (step-by-step)
+* State tracking (no infinite loops)
+* Full audit trail
+* Still zero-AI and deterministic
+
+> v1 answers **“What happened?”**  
+> v2 answers **“What should happen next?”**
 
 ---
 
-## High‑Level Architecture
+## High-Level Architecture
 
 ```mermaid
 flowchart TD
-    A[Log File] --> B[Log Parsing Engine]
-    B --> C[Incident Normalization]
-    C --> D[Rule‑Based Classification]
-    D --> E[Root Cause Analysis]
-    E --> F[Recommendation Engine]
-    F --> G[Final JSON Report]
-    G --> H[Incident History (JSONL)]
+    A[Log File] --> B[Parsing]
+    B --> C[Normalization]
+    C --> D[Classification]
+    D --> E[RCA]
+    E --> F[Incident Schema]
+    F --> G[Priority Engine]
+    G --> H[Rule Engine]
+    H --> I[Workflow Engine]
+    I --> J[Actions + Audit Trail]
 ```
 
 ---
-
-## Directory Structure
-
-```text
-atlas/
-├── atlas/
-│   ├── cli/              # CLI entry point (file‑based)
-│   ├── parsing/          # Log parsing engine
-│   ├── normalization/    # Incident normalization
-│   ├── classification/   # Rule‑based classifier
-│   ├── rca/              # Root cause analysis engine
-│   ├── recommendations/ # Action / remediation engine
-│   ├── history/          # Incident persistence (JSONL)
-│   ├── orchestrator/     # Pipeline orchestration
-│   ├── io/               # JSON I/O helpers
-│   ├── schemas/          # Shared data contracts
-│   └── __main__.py       # `python -m atlas`
-│
-├── tests/                # pytest test suite
-├── output/               # Generated reports (optional)
-├── incident_history.jsonl# Append‑only incident history
-├── README.md
-└── pyproject.toml
-```
-
----
-
-## Install (PyPI)
+### Install (PyPI)
 
 ```bash
 pip install atlas-incident
 ```
+Current version: 0.1.2
 
-Run:
+### Usage
 
 ```bash
-atlas <log_file> <service> <environment>
+python -m atlas <log_file> <service> <environment>
 ```
 
----
-
-## Usage (Real‑World Workflow)
-
-### 1️⃣ Create a production‑like log file
-
-```text
-2024-10-12T09:14:01Z INFO  payments-api Starting service
-2024-10-12T09:14:05Z INFO  payments-api Connected to postgres
-2024-10-12T09:15:22Z WARN  payments-api Slow query detected
-2024-10-12T09:16:10Z ERROR payments-api Database connection timeout
-2024-10-12T09:16:15Z ERROR payments-api Retries exhausted
-```
-
-### 2️⃣ Run ATLAS
+### Example:
 
 ```bash
 python -m atlas prod_payments.log payments-api prod
 ```
 
-### 3️⃣ Example Output (JSON)
+**What happens on run**
+
+1. v1 analyzes logs → Incident
+
+2. v2 assigns priority → runs response workflow
+
+
+### Example Output
 
 ```json
 {
   "service": "payments-api",
   "environment": "prod",
-  "severity": "HIGH",
-  "category": "DATABASE",
-  "root_cause": "Connection pool exhausted",
-  "actions": [
-    "Increase database connection pool size",
-    "Restart affected service",
-    "Monitor latency for 15 minutes"
-  ],
-  "confidence": 1.0
+  "severity": "LOW",
+  "category": "UNKNOWN",
+  "root_cause": "Unknown root cause",
+  "actions": ["Escalate to on-call engineer"],
+  "confidence": 0.6
 }
+
 ```
 
----
+```makefile
+=== ATLAS v2 RESULT ===
+Priority: P2
+Actions: []
+``` 
 
-## Incident History (Persistence)
+**Incident History**
 
-Each run is appended to `incident_history.jsonl`:
+Each run is appended to `incident_history.jsonl.`
 
-```json
-{"service":"payments-api","environment":"prod","severity":"HIGH","category":"DATABASE","root_cause":"Connection pool exhausted",...}
-```
+- Append-only
+- Audit-friendly
+- Replayable
 
-* Append‑only
-* Audit‑friendly
-* Replayable for future analysis
 
----
-
-## Testing
-
-Run the full test suite:
+### Testing
 
 ```bash
-pytest -v
+pytest
+pytest --cov=atlas_v2
 ```
 
-All core modules are covered with deterministic tests.
-
----
-
-## Design Principles
-
-* Determinism over intelligence
-* Rules over models
-* Schemas over guesses
-* Clarity over cleverness
-* Production realism over demos
-
----
+- Deterministic tests
+- Edge-case coverage
+- CI-ready
 
 
-## Future Scope
 
-ATLAS is intentionally minimal and deterministic. Potential future extensions include:
+### Design Principles
 
-* Configurable rule sets (YAML-based)
-* Additional log format parsers (NGINX, Kubernetes, Cloud logs)
-* Enhanced similarity matching using statistical techniques (still non-AI)
-* Optional output formats (Markdown / HTML reports)
-* Integration hooks for alerting or ticketing systems
+- Determinism over intelligence
+- Rules over models
+- Schemas over guesses
+- Clarity over cleverness
+- Production realism over demos
 
-> Any future additions will preserve ATLAS’s core principles: determinism, explainability, and zero-AI design.
 
 ---
 

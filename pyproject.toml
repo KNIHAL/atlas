@@ -1,6 +1,6 @@
 [project]
 name = "atlas-incident"
-version = "0.1.1"
+version = "0.1.2"
 description = "Deterministic, rule-based incident analysis and RCA system"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -11,5 +11,5 @@ authors = [{ name = "Nihal" }]
 atlas = "atlas.cli.main:main"
 
 [tool.setuptools.packages.find]
-include = ["atlas*"]
+include = ["atlas*", "atlas_v2*"]
 exclude = ["output*"]
