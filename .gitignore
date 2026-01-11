@@ -1,10 +1,29 @@
-venv
-env
+# Python
 __pycache__/
-*.pyc
-.DS_Store
-.idea/
-.vscode/
-*.log
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+
+# Virtual environments
+env/
+.venv/
+venv/
+
+# Build / packaging
+build/
+dist/
+
+# Test / tooling
 .pytest_cache/
-coverage/
+.mypy_cache/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Project generated data
+output/
+incident_history.jsonl
