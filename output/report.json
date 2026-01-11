@@ -1,0 +1,11 @@
+{
+  "actions": [
+    "Escalate to on-call engineer"
+  ],
+  "category": "UNKNOWN",
+  "confidence": 0.6,
+  "environment": "prod",
+  "root_cause": "Unknown root cause",
+  "service": "payments-api",
+  "severity": "LOW"
+}
